@@ -17,14 +17,14 @@ const targetBits = 24
 // ProofOfWork represents a proof-of-work
 type ProofOfWork struct {
 	block  *Block
-	target *big.Int
+	target *big.Int // target is value of prev hash
 }
 
 // NewProofOfWork builds and returns a ProofOfWork
 func NewProofOfWork(b *Block) *ProofOfWork {
-	target := big.NewInt(1)
+	target := big.NewInt(9)
 	target.Lsh(target, uint(256-targetBits))
-
+	fmt.Printf("target value: %s\n", target)
 	pow := &ProofOfWork{b, target}
 
 	return pow
@@ -56,9 +56,9 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 		data := pow.prepareData(nonce)
 
 		hash = sha256.Sum256(data)
-		fmt.Printf("\r%x", hash)
 		hashInt.SetBytes(hash[:])
-
+		fmt.Printf("hashInt in nonce [%d]: %x\n", nonce, hashInt.String())
+		fmt.Printf("target in nonce [%d]: %x\n", nonce, pow.target)
 		if hashInt.Cmp(pow.target) == -1 {
 			break
 		} else {
